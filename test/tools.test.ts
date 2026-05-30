@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { registerObservabilityTools } from "../src/tools/observability.js";
+import { registerActionTools } from "../src/tools/actions.js";
 
 // Minimal fake server that records registered tools and lets us invoke them.
 function fakeServer() {
@@ -46,5 +47,38 @@ describe("registerObservabilityTools", () => {
     registerObservabilityTools(s as any, fakeClient as any);
     await s.tools["get_run"].handler({ runId: "r1" });
     expect(fakeClient.getRun).toHaveBeenCalledWith("r1");
+  });
+});
+
+const actionClient = {
+  tenantId: "t1",
+  triggerWorkflow: vi.fn(async () => ({ run: { metadata: { id: "r9" } } })),
+  cancelRuns: vi.fn(async () => ({})),
+  replayRuns: vi.fn(async () => ({})),
+};
+
+describe("registerActionTools", () => {
+  it("registers trigger/cancel/replay", () => {
+    const s = fakeServer();
+    registerActionTools(s as any, actionClient as any);
+    for (const n of ["trigger_workflow", "cancel_runs", "replay_runs"]) {
+      expect(s.tools[n]).toBeDefined();
+    }
+  });
+
+  it("trigger_workflow forwards name + input", async () => {
+    const s = fakeServer();
+    registerActionTools(s as any, actionClient as any);
+    await s.tools["trigger_workflow"].handler({ workflowName: "wf", input: { a: 1 } });
+    expect(actionClient.triggerWorkflow).toHaveBeenCalledWith(
+      expect.objectContaining({ workflowName: "wf", input: { a: 1 } }),
+    );
+  });
+
+  it("cancel_runs forwards the id list", async () => {
+    const s = fakeServer();
+    registerActionTools(s as any, actionClient as any);
+    await s.tools["cancel_runs"].handler({ runIds: ["a", "b"] });
+    expect(actionClient.cancelRuns).toHaveBeenCalledWith(["a", "b"]);
   });
 });
