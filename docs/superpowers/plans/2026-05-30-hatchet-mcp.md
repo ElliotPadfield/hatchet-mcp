@@ -57,7 +57,7 @@
     "dev": "tsx src/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "pnpm build"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
@@ -111,13 +111,13 @@ export {};
 
 - [ ] **Step 5: Install deps**
 
-Run: `npm install`
-Expected: completes, creates `node_modules/` and `package-lock.json`. `node_modules/` already gitignored.
+Run: `pnpm install`
+Expected: completes, creates `node_modules/` and `pnpm-lock.yaml`. `node_modules/` already gitignored.
 
 - [ ] **Step 6: Commit**
 
 ```bash
-git add package.json tsconfig.json vitest.config.ts src/index.ts package-lock.json
+git add package.json tsconfig.json vitest.config.ts src/index.ts pnpm-lock.yaml
 git commit -m "chore: scaffold hatchet-mcp TypeScript project"
 ```
 
@@ -195,7 +195,7 @@ describe("resolveConfig", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `npx vitest run test/auth.test.ts`
+Run: `pnpm exec vitest run test/auth.test.ts`
 Expected: FAIL — cannot find module `../src/hatchet/auth.js`.
 
 - [ ] **Step 3: Write `src/hatchet/auth.ts`**
@@ -242,7 +242,7 @@ export function resolveConfig(env: Record<string, string | undefined>): HatchetC
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `npx vitest run test/auth.test.ts`
+Run: `pnpm exec vitest run test/auth.test.ts`
 Expected: PASS (6 tests).
 
 - [ ] **Step 5: Commit**
@@ -334,7 +334,7 @@ describe("HatchetClient.request", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `npx vitest run test/client.test.ts`
+Run: `pnpm exec vitest run test/client.test.ts`
 Expected: FAIL — cannot find module `../src/hatchet/client.js`.
 
 - [ ] **Step 3: Write `src/hatchet/client.ts` (core only; typed methods added next task)**
@@ -423,7 +423,7 @@ export class HatchetClient {
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `npx vitest run test/client.test.ts`
+Run: `pnpm exec vitest run test/client.test.ts`
 Expected: PASS (6 tests).
 
 - [ ] **Step 5: Commit**
@@ -580,7 +580,7 @@ function client_calledPath(f: ReturnType<typeof vi.fn>): string {
 
 - [ ] **Step 3: Run tests to verify they fail**
 
-Run: `npx vitest run test/client.test.ts`
+Run: `pnpm exec vitest run test/client.test.ts`
 Expected: FAIL — `client.listWorkflows is not a function`.
 
 - [ ] **Step 4: Add read methods to `src/hatchet/client.ts`**
@@ -649,7 +649,7 @@ Add inside the `HatchetClient` class:
 
 - [ ] **Step 5: Run tests to verify they pass**
 
-Run: `npx vitest run test/client.test.ts`
+Run: `pnpm exec vitest run test/client.test.ts`
 Expected: PASS (all client tests).
 
 - [ ] **Step 6: Commit**
@@ -705,7 +705,7 @@ describe("HatchetClient write methods", () => {
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `npx vitest run test/client.test.ts`
+Run: `pnpm exec vitest run test/client.test.ts`
 Expected: FAIL — `client.triggerWorkflow is not a function`.
 
 - [ ] **Step 3: Add write methods to `src/hatchet/client.ts`**
@@ -742,7 +742,7 @@ Expected: FAIL — `client.triggerWorkflow is not a function`.
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `npx vitest run test/client.test.ts`
+Run: `pnpm exec vitest run test/client.test.ts`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -877,7 +877,7 @@ describe("formatLogs", () => {
 
 - [ ] **Step 3: Run test to verify it fails**
 
-Run: `npx vitest run test/format.test.ts`
+Run: `pnpm exec vitest run test/format.test.ts`
 Expected: FAIL — cannot find module `../src/format.js`.
 
 - [ ] **Step 4: Write `src/format.ts`**
@@ -917,7 +917,7 @@ export function formatLogs(res: Paginated<LogRow>): string {
 
 - [ ] **Step 5: Run test to verify it passes**
 
-Run: `npx vitest run test/format.test.ts`
+Run: `pnpm exec vitest run test/format.test.ts`
 Expected: PASS (6 tests).
 
 - [ ] **Step 6: Commit**
@@ -995,7 +995,7 @@ describe("registerObservabilityTools", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `npx vitest run test/tools.test.ts`
+Run: `pnpm exec vitest run test/tools.test.ts`
 Expected: FAIL — cannot find module `../src/tools/observability.js`.
 
 - [ ] **Step 3: Write `src/tools/observability.ts`**
@@ -1091,7 +1091,7 @@ export function registerObservabilityTools(server: McpServer, client: HatchetCli
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `npx vitest run test/tools.test.ts`
+Run: `pnpm exec vitest run test/tools.test.ts`
 Expected: PASS (3 tests).
 
 - [ ] **Step 5: Commit**
@@ -1152,7 +1152,7 @@ describe("registerActionTools", () => {
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `npx vitest run test/tools.test.ts`
+Run: `pnpm exec vitest run test/tools.test.ts`
 Expected: FAIL — cannot find module `../src/tools/actions.js`.
 
 - [ ] **Step 3: Write `src/tools/actions.ts`**
@@ -1216,7 +1216,7 @@ export function registerActionTools(server: McpServer, client: HatchetClient): v
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `npx vitest run test/tools.test.ts`
+Run: `pnpm exec vitest run test/tools.test.ts`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -1265,7 +1265,7 @@ describe("createServer", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `npx vitest run test/server.test.ts`
+Run: `pnpm exec vitest run test/server.test.ts`
 Expected: FAIL — cannot find module `../src/server.js`.
 
 - [ ] **Step 3: Write `src/server.ts`**
@@ -1313,12 +1313,12 @@ export function createServer(client: HatchetClient): McpServer {
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `npx vitest run test/server.test.ts`
+Run: `pnpm exec vitest run test/server.test.ts`
 Expected: PASS.
 
 - [ ] **Step 5: Run the full suite**
 
-Run: `npm test`
+Run: `pnpm test`
 Expected: ALL tests pass (auth, client, format, tools, server).
 
 - [ ] **Step 6: Commit**
@@ -1368,7 +1368,7 @@ main().catch((e) => {
 
 - [ ] **Step 2: Verify it builds**
 
-Run: `npm run build`
+Run: `pnpm build`
 Expected: PASS — produces `dist/index.js` with a shebang.
 
 - [ ] **Step 3: Smoke-test startup failure path (no token)**
@@ -1391,12 +1391,12 @@ This is the manual gate that confirms the two contract-derived endpoints (`trigg
 
 - [ ] **Step 1: Build and create a local run config**
 
-Run: `npm run build`
+Run: `pnpm build`
 Create `.env` (already gitignored) with `HATCHET_CLIENT_TOKEN=...`.
 
 - [ ] **Step 2: Drive the server with the MCP Inspector**
 
-Run: `npx @modelcontextprotocol/inspector node dist/index.js`
+Run: `pnpm dlx @modelcontextprotocol/inspector node dist/index.js`
 (Pass the token via the Inspector's env settings, or `export $(cat .env)` first.)
 Expected: Inspector connects; the Tools tab lists `whoami`, `list_workflows`, `list_runs`, `get_run`, `get_run_logs`, `list_workers`, `get_queue_metrics`, `trigger_workflow`, `cancel_runs`, `replay_runs`.
 
@@ -1419,7 +1419,7 @@ Pick a safe/idempotent workflow name from step 2. Call `trigger_workflow` with `
 
 - [ ] **Step 5: Record the outcome**
 
-If any endpoint needed correction, update `docs/superpowers/specs/2026-05-30-hatchet-mcp-design.md` "Verified API Mapping" row and re-run `npm test`.
+If any endpoint needed correction, update `docs/superpowers/specs/2026-05-30-hatchet-mcp-design.md` "Verified API Mapping" row and re-run `pnpm test`.
 
 - [ ] **Step 6: Commit any fixes**
 
@@ -1463,12 +1463,12 @@ Must include:
 
 - [ ] **Step 3: Verify the package contents**
 
-Run: `npm pack --dry-run`
+Run: `pnpm pack`
 Expected: tarball includes `dist/`, `README.md`, `LICENSE`, `package.json` — and NOT `src/`, `test/`, `.env`, `node_modules/`.
 
 - [ ] **Step 4: Final full verification**
 
-Run: `npm test && npm run build`
+Run: `pnpm test && pnpm build`
 Expected: all tests pass; build succeeds.
 
 - [ ] **Step 5: Commit**
@@ -1480,8 +1480,8 @@ git commit -m "docs: README + MIT license; ready for npm publish"
 
 - [ ] **Step 6: Publish (human-gated)**
 
-Run (only when the user approves): `npm publish --access public`
-Expected: `hatchet-mcp@0.1.0` published. (Requires `npm login`.)
+Run (only when the user approves): `pnpm publish --access public`
+Expected: `hatchet-mcp@0.1.0` published. (Requires `pnpm login` / npm auth.)
 
 ---
 
