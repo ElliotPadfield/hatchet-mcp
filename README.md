@@ -1,6 +1,6 @@
 # hatchet-mcp
 
-[![CI](https://github.com/elliotpadfield/hatchet-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/elliotpadfield/hatchet-mcp/actions/workflows/ci.yml)
+[![CI](https://github.com/ElliotPadfield/hatchet-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/ElliotPadfield/hatchet-mcp/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/hatchet-mcp.svg)](https://www.npmjs.com/package/hatchet-mcp)
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 

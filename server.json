@@ -1,0 +1,38 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
+  "name": "io.github.elliotpadfield/hatchet-mcp",
+  "description": "Observe and operate Hatchet workflows from an AI agent: status, runs, logs, workers, metrics, plus trigger / cancel / replay.",
+  "version": "0.1.0",
+  "repository": {
+    "url": "https://github.com/ElliotPadfield/hatchet-mcp",
+    "source": "github"
+  },
+  "packages": [
+    {
+      "registry_type": "npm",
+      "identifier": "hatchet-mcp",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environment_variables": [
+        {
+          "name": "HATCHET_CLIENT_TOKEN",
+          "description": "Hatchet API token (a JWT). Encodes the server URL and tenant, so it is normally the only setting required.",
+          "is_required": true,
+          "is_secret": true
+        },
+        {
+          "name": "HATCHET_API_BASE",
+          "description": "Override the API base URL. Self-hosters can point this at any Hatchet instance.",
+          "is_required": false
+        },
+        {
+          "name": "HATCHET_TENANT_ID",
+          "description": "Override the tenant id decoded from the token.",
+          "is_required": false
+        }
+      ]
+    }
+  ]
+}

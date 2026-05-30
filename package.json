@@ -15,13 +15,13 @@
     "ai-agents",
     "llm-tools"
   ],
-  "homepage": "https://github.com/elliotpadfield/hatchet-mcp#readme",
+  "homepage": "https://github.com/ElliotPadfield/hatchet-mcp#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/elliotpadfield/hatchet-mcp.git"
+    "url": "git+https://github.com/ElliotPadfield/hatchet-mcp.git"
   },
   "bugs": {
-    "url": "https://github.com/elliotpadfield/hatchet-mcp/issues"
+    "url": "https://github.com/ElliotPadfield/hatchet-mcp/issues"
   },
   "bin": { "hatchet-mcp": "dist/index.js" },
   "files": ["dist"],
