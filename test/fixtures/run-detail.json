@@ -1,0 +1,26 @@
+{
+  "run": {
+    "metadata": { "id": "e6150bc5-086e-4751-b1ba-a800bb48ff9b" },
+    "displayName": "transcribe-batch-mlx-1780170600529",
+    "status": "FAILED",
+    "workflowName": "transcribe-batch-mlx",
+    "workflowId": "b0440966",
+    "taskExternalId": "e6150bc5-086e-4751-b1ba-a800bb48ff9b",
+    "workflowRunExternalId": "e6150bc5-086e-4751-b1ba-a800bb48ff9b",
+    "errorMessage": "boom",
+    "createdAt": "2026-05-30T19:50:00.505728Z"
+  },
+  "tasks": [
+    {
+      "metadata": { "id": "task-1" },
+      "displayName": "step-a",
+      "status": "FAILED",
+      "workflowName": "transcribe-batch-mlx",
+      "workflowId": "b0440966",
+      "taskExternalId": "task-1",
+      "workflowRunExternalId": "e6150bc5",
+      "errorMessage": "boom",
+      "createdAt": "2026-05-30T19:50:00Z"
+    }
+  ]
+}

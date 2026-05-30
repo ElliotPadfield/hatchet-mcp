@@ -195,13 +195,13 @@ user's Cloud tenant with the Bearer token.
 | `list_workflows` | `GET /api/v1/tenants/{t}/workflows` ✓live | `{pagination, rows[]}` |
 | `get_workflow` | `GET /api/v1/workflows/{workflow}` (+ `/versions`, `/metrics`) | |
 | `list_runs` | `GET /api/v1/stable/tenants/{t}/workflow-runs` ✓live | **required** query: `only_tasks` (bool), `since` (ISO). Optional: `until`, `statuses[]`, `workflow_ids[]`, `worker_id`, `additional_metadata[]`, `limit`, `offset`, `include_payloads`, `parent_task_external_id`, `triggering_event_external_id`. Returns `{pagination, rows[]}` |
-| `get_run` | `GET /api/v1/stable/workflow-runs/{externalId}` ✓live | returns `{run, shape, taskEvents, tasks, workflowConfig}` — consolidated, no extra calls needed |
+| `get_run` | `GET /api/v1/stable/workflow-runs/{externalId}` ✓live | returns `{run, shape, taskEvents, tasks, workflowConfig}` — consolidated. NOTE (live): the `run` object has NO `workflowName` (only `workflowId`/`workflowVersionId`, plus `duration`/`startedAt`/`finishedAt`); formatter omits `workflow=` when absent. |
 | `get_run_logs` | `GET /api/v1/stable/tasks/{externalId}/logs` ✓live | query: `limit, since, until, search, levels[], attempt`. Returns `{pagination, rows[]}` (`message, level, createdAt, attempt, taskDisplayName, taskExternalId`) |
 | `list_workers` | `GET /api/v1/tenants/{t}/worker` ✓live | |
 | `get_queue_metrics` | `GET /api/v1/stable/tenants/{t}/task-metrics` ✓live | replaces deprecated `queue-metrics`; returns a list |
-| `trigger_workflow` | `POST /api/v1/stable/tenants/{t}/workflow-runs` | body `V1TriggerWorkflowRunRequest`: `workflowName`*(string), `input`*(object), `additionalMetadata`?(object), `priority`?(int). Path to confirm-on-first-call. |
-| `cancel_runs` | `POST /api/v1/stable/tenants/{t}/tasks/cancel` | body `V1CancelTaskRequest`: `externalIds`?(uuid[]), `filter`?(`V1TaskFilter`) |
-| `replay_runs` | `POST /api/v1/stable/tenants/{t}/tasks/replay` | body `V1ReplayTaskRequest`: same shape as cancel |
+| `trigger_workflow` | `POST /api/v1/stable/tenants/{t}/workflow-runs/trigger` ✓live | **Live-corrected + confirmed 2026-05-30:** the `/trigger` suffix is required (no-suffix path → 403). body `V1TriggerWorkflowRunRequest`: `workflowName`*(string), `input`*(object), `additionalMetadata`?(object), `priority`?(int). Triggered a real `health-check` run end-to-end through the MCP (status RUNNING). Returns the consolidated run detail (same shape as `get_run`). |
+| `cancel_runs` | `POST /api/v1/stable/tenants/{t}/tasks/cancel` ✓live | body `V1CancelTaskRequest`: `externalIds`?(uuid[]), `filter`?(`V1TaskFilter`). Returns `{ids:[...]}`. Verified 200 with a bogus id (cancels nothing). |
+| `replay_runs` | `POST /api/v1/stable/tenants/{t}/tasks/replay` ✓live | body `V1ReplayTaskRequest`: same shape as cancel. Verified 200. |
 
 `V1TaskFilter`: `since`*(ISO), `until`?, `statuses`?(enum[]), `workflowIds`?(uuid[]), `additionalMetadata`?(string[]).
 
