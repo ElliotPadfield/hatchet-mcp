@@ -52,8 +52,9 @@ export class HatchetClient {
     }
 
     if (!res.ok) throw this.toError(res, await res.text());
-    if (res.status === 204) return undefined as T;
-    return (await res.json()) as T;
+    const raw = await res.text();
+    if (!raw) return undefined as T;
+    return JSON.parse(raw) as T;
   }
 
   private toError(res: Response, body: string): HatchetApiError {

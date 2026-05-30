@@ -46,6 +46,12 @@ describe("HatchetClient.request", () => {
     expect((init.headers as Record<string, string>)["content-type"]).toBe("application/json");
   });
 
+  it("returns undefined for an empty 2xx body", async () => {
+    const f = vi.fn(async () => new Response("", { status: 200 }));
+    const client = new HatchetClient(cfg, f);
+    await expect(client.request("POST", "/x")).resolves.toBeUndefined();
+  });
+
   it("maps 401 to a clear error", async () => {
     const client = new HatchetClient(cfg, mockFetch(401, { message: "nope" }));
     await expect(client.request("GET", "/x")).rejects.toThrow(/invalid or expired/i);
