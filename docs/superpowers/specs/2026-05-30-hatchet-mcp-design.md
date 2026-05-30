@@ -86,19 +86,19 @@ build, `vitest` for tests.
   - `HATCHET_TENANT_ID` — tenant override.
 
 On startup, `auth.ts` base64-decodes the JWT payload and reads the server URL
-and tenant claims (the same mechanism the official SDKs use to bootstrap from a
-single token). Resolution precedence: explicit env override > token claim. If
-neither yields a value, startup fails with a clear message naming the missing
-piece.
+and tenant claims. **Confirmed against a live Cloud token (2026-05-30):**
+
+- `server_url` claim → REST base URL (e.g. `https://cloud.onhatchet.run`)
+- `sub` claim → tenant/org id
+
+Resolution precedence: explicit env override > token claim. If neither yields a
+value, startup fails with a clear message naming the missing piece.
 
 Auth header on every request: `Authorization: Bearer <HATCHET_CLIENT_TOKEN>`.
+**Verified live:** `GET /api/v1/tenants/{sub}/workflows` returns `200` with this
+header and the `sub` claim as tenant.
 
 The token is never echoed in tool output or error messages.
-
-> Implementation note: the exact JWT claim names for server URL and tenant must
-> be confirmed against a real token during implementation (decode a live token,
-> inspect claims). If a claim is absent, fall back to requiring the
-> corresponding env override and document it. This is the one external unknown.
 
 ## Tool Surface
 
@@ -109,7 +109,7 @@ the ~40 REST endpoints, to keep the tool list legible and context-efficient.
 
 | Tool | Purpose | Primary endpoint(s) |
 |---|---|---|
-| `whoami` | Resolved tenant + server URL; connection sanity check | (local, from auth) + optional `GET /api/v1/users/current` |
+| `whoami` | Resolved tenant + server URL; connection sanity check | Decoded token claims + a `list workflows?limit=1` liveness ping. **Do NOT use `/api/v1/users/current`** — confirmed `403` with a tenant API token. |
 | `list_workflows` | Workflow definitions for the tenant; name filter, pagination | `GET /api/v1/tenants/{tenant}/workflows` |
 | `get_workflow` | One workflow: versions + metrics | `GET /api/v1/workflows/{workflow}`, `/versions`, `/metrics` |
 | `list_runs` | **Workhorse.** Runs filtered by status / workflow / time window / limit | `GET /api/v1/tenants/{tenant}/workflow-runs` |
@@ -184,11 +184,13 @@ a clear "could not reach Hatchet at {base}" message.
 
 ## Open Implementation Risks
 
-1. **JWT claim names** for server URL + tenant — confirm against a real token
-   early (see auth note). Highest-uncertainty item; everything else is
-   mechanical REST wrapping.
+1. ~~**JWT claim names**~~ — RESOLVED 2026-05-30 against a live Cloud token:
+   `server_url` and `sub`. Auth + tenant path verified `200`.
 2. **Endpoint shape variance** between Hatchet versions — the OpenAPI spec is
    the source of truth; pin to documented `/api/v1` paths and record fixtures
-   from a live instance.
+   from a live instance. List responses use `{pagination, rows}` (confirmed for
+   workflows).
 3. **`trigger` vs per-workflow trigger** — confirm which trigger endpoint takes
    workflow name vs id and the input body shape during implementation.
+4. **`get_run_logs` exact source** — confirm whether step logs come from a
+   dedicated logs endpoint or step-run events; record a fixture from a real run.
