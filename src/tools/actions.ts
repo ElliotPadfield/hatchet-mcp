@@ -32,7 +32,12 @@ export function registerActionTools(server: McpServer, client: HatchetClient): v
     "cancel_runs",
     {
       description: "MUTATES LIVE STATE. Cancel one or more runs/tasks by external id.",
-      inputSchema: { runIds: z.array(z.string()).min(1) },
+      inputSchema: {
+        runIds: z
+          .array(z.string())
+          .min(1)
+          .describe("Run or task external ids (from list_runs / get_run id= fields)"),
+      },
     },
     async ({ runIds }) => {
       await client.cancelRuns(runIds);
@@ -44,7 +49,12 @@ export function registerActionTools(server: McpServer, client: HatchetClient): v
     "replay_runs",
     {
       description: "MUTATES LIVE STATE. Replay/retry one or more runs/tasks by external id.",
-      inputSchema: { runIds: z.array(z.string()).min(1) },
+      inputSchema: {
+        runIds: z
+          .array(z.string())
+          .min(1)
+          .describe("Run or task external ids (from list_runs / get_run id= fields)"),
+      },
     },
     async ({ runIds }) => {
       await client.replayRuns(runIds);

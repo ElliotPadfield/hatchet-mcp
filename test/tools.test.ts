@@ -81,4 +81,11 @@ describe("registerActionTools", () => {
     await s.tools["cancel_runs"].handler({ runIds: ["a", "b"] });
     expect(actionClient.cancelRuns).toHaveBeenCalledWith(["a", "b"]);
   });
+
+  it("surfaces a client error from cancel_runs as a tool error", async () => {
+    const s = fakeServer();
+    const failing = { ...actionClient, cancelRuns: vi.fn(async () => { throw new Error("Token lacks permission for this tenant or resource."); }) };
+    registerActionTools(s as any, failing as any);
+    await expect(s.tools["cancel_runs"].handler({ runIds: ["a"] })).rejects.toThrow(/permission/i);
+  });
 });
