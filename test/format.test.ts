@@ -24,6 +24,10 @@ describe("formatRunDetail", () => {
     expect(out).toContain("step-a");
     expect(out).toContain("boom");
   });
+
+  it("handles a missing run gracefully", () => {
+    expect(formatRunDetail({} as any)).toMatch(/not found/i);
+  });
 });
 
 describe("formatLogs", () => {
