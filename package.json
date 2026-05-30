@@ -3,13 +3,33 @@
   "version": "0.1.0",
   "description": "Model Context Protocol server for the Hatchet workflow orchestration API",
   "license": "MIT",
+  "author": "Elliot Padfield",
   "type": "module",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "hatchet",
+    "workflows",
+    "orchestration",
+    "claude",
+    "ai-agents",
+    "llm-tools"
+  ],
+  "homepage": "https://github.com/elliotpadfield/hatchet-mcp#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elliotpadfield/hatchet-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/elliotpadfield/hatchet-mcp/issues"
+  },
   "bin": { "hatchet-mcp": "dist/index.js" },
   "files": ["dist"],
   "engines": { "node": ">=20" },
   "scripts": {
     "build": "tsup src/index.ts --format esm --target node20 --clean --no-dts",
     "dev": "tsx src/index.ts",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "prepublishOnly": "pnpm build"

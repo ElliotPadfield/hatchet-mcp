@@ -1,5 +1,9 @@
 # hatchet-mcp
 
+[![CI](https://github.com/elliotpadfield/hatchet-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/elliotpadfield/hatchet-mcp/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/hatchet-mcp.svg)](https://www.npmjs.com/package/hatchet-mcp)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+
 An MCP server that lets AI agents observe and operate [Hatchet](https://hatchet.run) workflows — status, runs, logs, workers, and metrics, plus trigger / cancel / replay.
 
 **Why:** Hatchet has a great API but no MCP. This wraps it so agents (Claude Code / Desktop, etc.) can see and act on workflow state.
