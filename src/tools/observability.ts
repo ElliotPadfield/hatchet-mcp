@@ -4,7 +4,11 @@ import type { HatchetClient } from "../hatchet/client.js";
 import { formatRunsList, formatRunDetail, formatLogs } from "../format.js";
 
 const text = (s: string) => ({ content: [{ type: "text" as const, text: s }] });
-const json = (v: unknown) => text("```json\n" + JSON.stringify(v, null, 2).slice(0, 8000) + "\n```");
+const json = (v: unknown) => {
+  const full = JSON.stringify(v, null, 2);
+  const body = full.length > 8000 ? full.slice(0, 8000) + "\n… (truncated)" : full;
+  return text("```json\n" + body + "\n```");
+};
 
 // Default lookback window for list_runs when the caller omits `since`.
 function defaultSince(): string {
@@ -52,7 +56,7 @@ export function registerObservabilityTools(server: McpServer, client: HatchetCli
     "get_run",
     {
       description: "Get the full detail of one workflow run (status, tasks, errors) by its external id.",
-      inputSchema: { runId: z.string().describe("workflowRunExternalId / taskExternalId") },
+      inputSchema: { runId: z.string().describe("Run id from list_runs output (the id= field)") },
     },
     async ({ runId }) => text(formatRunDetail(await client.getRun(runId))),
   );
@@ -62,7 +66,7 @@ export function registerObservabilityTools(server: McpServer, client: HatchetCli
     {
       description: "Get log lines for a task by its external id.",
       inputSchema: {
-        taskId: z.string().describe("taskExternalId"),
+        taskId: z.string().describe("Task id from get_run's per-task id= field (taskExternalId)"),
         limit: z.number().int().positive().max(500).optional(),
         search: z.string().optional(),
         levels: z.array(z.string()).optional().describe("e.g. INFO, WARN, ERROR"),
