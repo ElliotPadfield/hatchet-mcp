@@ -125,7 +125,7 @@ describe("HatchetClient write methods", () => {
     const client = new HatchetClient(cfg, f);
     await client.triggerWorkflow({ workflowName: "my-wf", input: { x: 1 } });
     const [url, init] = f.mock.calls[0];
-    expect(new URL(url as string).pathname).toBe("/api/v1/stable/tenants/t1/workflow-runs");
+    expect(new URL(url as string).pathname).toBe("/api/v1/stable/tenants/t1/workflow-runs/trigger");
     expect(JSON.parse((init as RequestInit).body as string)).toEqual({
       workflowName: "my-wf",
       input: { x: 1 },

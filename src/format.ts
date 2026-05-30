@@ -13,7 +13,8 @@ export function formatRunsList(res: Paginated<RunRow>): string {
 export function formatRunDetail(res: RunDetail): string {
   if (!res?.run) return "Run not found.";
   const run = res.run;
-  const head = `Run ${run.displayName} [${run.status}] workflow=${run.workflowName} id=${run.metadata?.id ?? run.workflowRunExternalId}`;
+  const wf = run.workflowName ? ` workflow=${run.workflowName}` : "";
+  const head = `Run ${run.displayName} [${run.status}]${wf} id=${run.metadata?.id ?? run.workflowRunExternalId}`;
   const err = run.errorMessage ? `\nerror: ${run.errorMessage}` : "";
   const tasks = (res.tasks ?? [])
     .map((t) => {

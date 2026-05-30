@@ -116,7 +116,7 @@ export class HatchetClient {
     additionalMetadata?: Record<string, unknown>;
     priority?: number;
   }): Promise<unknown> {
-    return this.request("POST", `/api/v1/stable/tenants/${this.cfg.tenantId}/workflow-runs`, {
+    return this.request("POST", `/api/v1/stable/tenants/${this.cfg.tenantId}/workflow-runs/trigger`, {
       body: {
         workflowName: args.workflowName,
         input: args.input,

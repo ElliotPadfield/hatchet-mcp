@@ -28,6 +28,12 @@ describe("formatRunDetail", () => {
   it("handles a missing run gracefully", () => {
     expect(formatRunDetail({} as any)).toMatch(/not found/i);
   });
+
+  it("omits workflow= when the detail run has no workflowName", () => {
+    const out = formatRunDetail({ run: { metadata: { id: "r1" }, displayName: "d", status: "RUNNING" } } as any);
+    expect(out).not.toContain("undefined");
+    expect(out).toContain("[RUNNING]");
+  });
 });
 
 describe("formatLogs", () => {
