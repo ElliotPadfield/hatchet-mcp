@@ -1,7 +1,8 @@
 {
   "name": "hatchet-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Model Context Protocol server for the Hatchet workflow orchestration API",
+  "mcpName": "io.github.ElliotPadfield/hatchet-mcp",
   "license": "MIT",
   "author": "Elliot Padfield",
   "type": "module",
