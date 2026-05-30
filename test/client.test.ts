@@ -70,3 +70,56 @@ describe("HatchetClient.request", () => {
     });
   });
 });
+
+describe("HatchetClient read methods", () => {
+  it("listWorkflows hits the tenant workflows path", async () => {
+    const f = mockFetch(200, { rows: [{ metadata: { id: "w1" }, name: "wf" }] });
+    const client = new HatchetClient(cfg, f);
+    const res = await client.listWorkflows({ limit: 5 });
+    expect(client_calledPath(f)).toBe("/api/v1/tenants/t1/workflows");
+    expect(res.rows[0].name).toBe("wf");
+  });
+
+  it("listRuns sends required only_tasks and since", async () => {
+    const f = mockFetch(200, { rows: [] });
+    const client = new HatchetClient(cfg, f);
+    await client.listRuns({ since: "2026-05-20T00:00:00.000Z" });
+    const url = f.mock.calls[0][0] as string;
+    expect(url).toContain("/api/v1/stable/tenants/t1/workflow-runs");
+    expect(url).toContain("only_tasks=false");
+    expect(url).toContain("since=2026-05-20");
+  });
+
+  it("getRun fetches the consolidated stable detail", async () => {
+    const f = mockFetch(200, { run: { metadata: { id: "r1" }, status: "RUNNING" } });
+    const client = new HatchetClient(cfg, f);
+    await client.getRun("r1");
+    expect(client_calledPath(f)).toBe("/api/v1/stable/workflow-runs/r1");
+  });
+
+  it("getTaskLogs hits the stable task logs path", async () => {
+    const f = mockFetch(200, { rows: [] });
+    const client = new HatchetClient(cfg, f);
+    await client.getTaskLogs("task-1", { limit: 50 });
+    expect(client_calledPath(f)).toBe("/api/v1/stable/tasks/task-1/logs");
+  });
+
+  it("listWorkers hits the worker path", async () => {
+    const f = mockFetch(200, { rows: [] });
+    const client = new HatchetClient(cfg, f);
+    await client.listWorkers();
+    expect(client_calledPath(f)).toBe("/api/v1/tenants/t1/worker");
+  });
+
+  it("getTaskMetrics hits the stable task-metrics path", async () => {
+    const f = mockFetch(200, []);
+    const client = new HatchetClient(cfg, f);
+    await client.getTaskMetrics();
+    expect(client_calledPath(f)).toBe("/api/v1/stable/tenants/t1/task-metrics");
+  });
+});
+
+// Helper: extract pathname from the first fetch call.
+function client_calledPath(f: ReturnType<typeof vi.fn>): string {
+  return new URL(f.mock.calls[0][0] as string).pathname;
+}

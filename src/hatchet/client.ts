@@ -1,4 +1,7 @@
 import type { HatchetConfig } from "./auth.js";
+import type {
+  Paginated, WorkflowRow, RunRow, RunDetail, LogRow, WorkerRow, ListRunsParams,
+} from "./types.js";
 
 export class HatchetApiError extends Error {
   constructor(public status: number, message: string) {
@@ -55,6 +58,56 @@ export class HatchetClient {
     const raw = await res.text();
     if (!raw) return undefined as T;
     return JSON.parse(raw) as T;
+  }
+
+  listWorkflows(params: { limit?: number; offset?: number } = {}): Promise<Paginated<WorkflowRow>> {
+    return this.request("GET", `/api/v1/tenants/${this.cfg.tenantId}/workflows`, {
+      query: { limit: params.limit, offset: params.offset },
+    });
+  }
+
+  listRuns(params: ListRunsParams): Promise<Paginated<RunRow>> {
+    return this.request("GET", `/api/v1/stable/tenants/${this.cfg.tenantId}/workflow-runs`, {
+      query: {
+        only_tasks: params.onlyTasks ?? false,
+        since: params.since,
+        until: params.until,
+        statuses: params.statuses,
+        workflow_ids: params.workflowIds,
+        additional_metadata: params.additionalMetadata,
+        limit: params.limit,
+        offset: params.offset,
+        include_payloads: params.includePayloads,
+      },
+    });
+  }
+
+  getRun(externalId: string): Promise<RunDetail> {
+    return this.request("GET", `/api/v1/stable/workflow-runs/${externalId}`);
+  }
+
+  getTaskLogs(
+    taskExternalId: string,
+    params: { limit?: number; since?: string; until?: string; search?: string; levels?: string[]; attempt?: number } = {},
+  ): Promise<Paginated<LogRow>> {
+    return this.request("GET", `/api/v1/stable/tasks/${taskExternalId}/logs`, {
+      query: {
+        limit: params.limit,
+        since: params.since,
+        until: params.until,
+        search: params.search,
+        levels: params.levels,
+        attempt: params.attempt,
+      },
+    });
+  }
+
+  listWorkers(): Promise<Paginated<WorkerRow>> {
+    return this.request("GET", `/api/v1/tenants/${this.cfg.tenantId}/worker`);
+  }
+
+  getTaskMetrics(): Promise<unknown> {
+    return this.request("GET", `/api/v1/stable/tenants/${this.cfg.tenantId}/task-metrics`);
   }
 
   private toError(res: Response, body: string): HatchetApiError {
