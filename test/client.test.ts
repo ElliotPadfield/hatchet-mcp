@@ -119,6 +119,36 @@ describe("HatchetClient read methods", () => {
   });
 });
 
+describe("HatchetClient write methods", () => {
+  it("triggerWorkflow posts workflowName + input", async () => {
+    const f = mockFetch(200, { run: { metadata: { id: "r9" } } });
+    const client = new HatchetClient(cfg, f);
+    await client.triggerWorkflow({ workflowName: "my-wf", input: { x: 1 } });
+    const [url, init] = f.mock.calls[0];
+    expect(new URL(url as string).pathname).toBe("/api/v1/stable/tenants/t1/workflow-runs");
+    expect(JSON.parse((init as RequestInit).body as string)).toEqual({
+      workflowName: "my-wf",
+      input: { x: 1 },
+    });
+  });
+
+  it("cancelRuns posts externalIds to the tasks/cancel path", async () => {
+    const f = mockFetch(200, {});
+    const client = new HatchetClient(cfg, f);
+    await client.cancelRuns(["a", "b"]);
+    const [url, init] = f.mock.calls[0];
+    expect(new URL(url as string).pathname).toBe("/api/v1/stable/tenants/t1/tasks/cancel");
+    expect(JSON.parse((init as RequestInit).body as string)).toEqual({ externalIds: ["a", "b"] });
+  });
+
+  it("replayRuns posts externalIds to the tasks/replay path", async () => {
+    const f = mockFetch(200, {});
+    const client = new HatchetClient(cfg, f);
+    await client.replayRuns(["a"]);
+    expect(new URL(f.mock.calls[0][0] as string).pathname).toBe("/api/v1/stable/tenants/t1/tasks/replay");
+  });
+});
+
 // Helper: extract pathname from the first fetch call.
 function client_calledPath(f: ReturnType<typeof vi.fn>): string {
   return new URL(f.mock.calls[0][0] as string).pathname;

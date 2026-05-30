@@ -110,6 +110,34 @@ export class HatchetClient {
     return this.request("GET", `/api/v1/stable/tenants/${this.cfg.tenantId}/task-metrics`);
   }
 
+  triggerWorkflow(args: {
+    workflowName: string;
+    input: Record<string, unknown>;
+    additionalMetadata?: Record<string, unknown>;
+    priority?: number;
+  }): Promise<unknown> {
+    return this.request("POST", `/api/v1/stable/tenants/${this.cfg.tenantId}/workflow-runs`, {
+      body: {
+        workflowName: args.workflowName,
+        input: args.input,
+        additionalMetadata: args.additionalMetadata,
+        priority: args.priority,
+      },
+    });
+  }
+
+  cancelRuns(externalIds: string[]): Promise<unknown> {
+    return this.request("POST", `/api/v1/stable/tenants/${this.cfg.tenantId}/tasks/cancel`, {
+      body: { externalIds },
+    });
+  }
+
+  replayRuns(externalIds: string[]): Promise<unknown> {
+    return this.request("POST", `/api/v1/stable/tenants/${this.cfg.tenantId}/tasks/replay`, {
+      body: { externalIds },
+    });
+  }
+
   private toError(res: Response, body: string): HatchetApiError {
     const trimmed = body.slice(0, 300);
     switch (res.status) {
