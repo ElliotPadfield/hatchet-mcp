@@ -38,7 +38,7 @@ Self-hosting? Set `HATCHET_API_BASE` to your own Hatchet instance and it works a
 
 | Tool | Description |
 | --- | --- |
-| `whoami` | Show the authenticated user and resolved tenant. |
+| `whoami` | Show the resolved Hatchet tenant + server URL and confirm the token works. |
 | `list_workflows` | List workflow definitions for the tenant. |
 | `list_runs` | List workflow runs (with an optional lookback window and filters). |
 | `get_run` | Get the full detail of one workflow run — status, tasks, errors. |
