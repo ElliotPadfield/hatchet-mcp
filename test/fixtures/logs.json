@@ -1,0 +1,7 @@
+{
+  "pagination": { "current_page": 0 },
+  "rows": [
+    { "message": "Polling for pending refresh requests", "level": "INFO", "createdAt": "2026-05-23T19:55:03.088Z", "attempt": 1, "taskDisplayName": "refresh-request-poller", "taskExternalId": "6e72aa40" },
+    { "message": "No pending refresh requests", "level": "INFO", "createdAt": "2026-05-23T19:55:05.351Z", "attempt": 1, "taskDisplayName": "refresh-request-poller", "taskExternalId": "6e72aa40" }
+  ]
+}
