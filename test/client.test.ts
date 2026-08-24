@@ -111,6 +111,13 @@ describe("HatchetClient read methods", () => {
     expect(client_calledPath(f)).toBe("/api/v1/tenants/t1/worker");
   });
 
+  it("getWorkflow hits /api/v1/workflows/{id}", async () => {
+    const f = mockFetch(200, { metadata: { id: "w1" }, name: "wf" });
+    const client = new HatchetClient(cfg, f);
+    await client.getWorkflow("w1");
+    expect(client_calledPath(f)).toBe("/api/v1/workflows/w1");
+  });
+
   it("getTaskMetrics hits the stable task-metrics path", async () => {
     const f = mockFetch(200, []);
     const client = new HatchetClient(cfg, f);
@@ -146,6 +153,14 @@ describe("HatchetClient write methods", () => {
     const client = new HatchetClient(cfg, f);
     await client.replayRuns(["a"]);
     expect(new URL(f.mock.calls[0][0] as string).pathname).toBe("/api/v1/stable/tenants/t1/tasks/replay");
+  });
+
+  it("deleteWorkflow DELETEs /api/v1/workflows/{id} and accepts 204", async () => {
+    const f = vi.fn(async () => new Response(null, { status: 204 }));
+    const client = new HatchetClient(cfg, f);
+    await expect(client.deleteWorkflow("w1")).resolves.toBeUndefined();
+    expect(f.mock.calls[0][1].method).toBe("DELETE");
+    expect(new URL(f.mock.calls[0][0] as string).pathname).toBe("/api/v1/workflows/w1");
   });
 });
 

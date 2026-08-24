@@ -3,6 +3,19 @@
 All notable changes to `hatchet-mcp` are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-08-24
+
+### Added
+
+- `find_unused_workflows` — report workflow definitions with no runs in a
+  lookback window (default 30 days). Used to find retired/renamed tasks that
+  still clutter the Hatchet dashboard.
+- `get_workflow` — fetch one workflow definition by id.
+- `delete_workflow` — permanently delete a workflow definition (requires
+  `confirm: true`). Drops cron schedules on that definition. Destructive;
+  description is prefixed `MUTATES LIVE STATE`.
+- `list_workflows` now accepts optional `offset` and `name` filters.
+
 ## [0.1.1] - 2026-05-30
 
 ### Added

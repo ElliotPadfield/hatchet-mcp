@@ -10,9 +10,11 @@ const client = {
   getTaskLogs: vi.fn(),
   listWorkers: vi.fn(),
   getTaskMetrics: vi.fn(),
+  getWorkflow: vi.fn(),
   triggerWorkflow: vi.fn(),
   cancelRuns: vi.fn(),
   replayRuns: vi.fn(),
+  deleteWorkflow: vi.fn(),
 };
 
 describe("createServer", () => {
@@ -21,17 +23,18 @@ describe("createServer", () => {
     expect(server).toBeDefined();
   });
 
-  it("registers all 10 tools (whoami + 6 read + 3 write)", () => {
+  it("registers all 13 tools (whoami + 8 read + 4 write)", () => {
     const server = createServer(client as any) as any;
     const names = Object.keys(server._registeredTools ?? {});
     expect(names).toEqual(
       expect.arrayContaining([
         "whoami",
-        "list_workflows", "list_runs", "get_run", "get_run_logs", "list_workers", "get_queue_metrics",
-        "trigger_workflow", "cancel_runs", "replay_runs",
+        "list_workflows", "get_workflow", "find_unused_workflows",
+        "list_runs", "get_run", "get_run_logs", "list_workers", "get_queue_metrics",
+        "trigger_workflow", "cancel_runs", "replay_runs", "delete_workflow",
       ]),
     );
-    expect(names).toHaveLength(10);
+    expect(names).toHaveLength(13);
   });
 
   it("whoami reports tenant/server and ok liveness", async () => {
