@@ -43,7 +43,9 @@ Self-hosting? Set `HATCHET_API_BASE` to your own Hatchet instance and it works a
 | Tool | Description |
 | --- | --- |
 | `whoami` | Show the resolved Hatchet tenant + server URL and confirm the token works. |
-| `list_workflows` | List workflow definitions for the tenant. |
+| `list_workflows` | List workflow definitions for the tenant (optional name / offset). |
+| `get_workflow` | Get one workflow definition by id. |
+| `find_unused_workflows` | List definitions with no runs in a lookback window (default 30 days). |
 | `list_runs` | List workflow runs (with an optional lookback window and filters). |
 | `get_run` | Get the full detail of one workflow run — status, tasks, errors. |
 | `get_run_logs` | Get log lines for a task by its external id. |
@@ -57,12 +59,15 @@ Self-hosting? Set `HATCHET_API_BASE` to your own Hatchet instance and it works a
 | `trigger_workflow` | Trigger a new workflow run by name with a JSON input payload. |
 | `cancel_runs` | Cancel one or more runs/tasks by external id. |
 | `replay_runs` | Replay/retry one or more runs/tasks by external id. |
+| `delete_workflow` | Permanently delete a workflow **definition** by id (`confirm: true` required). |
 
 ## Safety
 
-The read tools (`whoami`, `list_workflows`, `list_runs`, `get_run`, `get_run_logs`, `list_workers`, `get_queue_metrics`) are non-destructive.
+The read tools (`whoami`, `list_workflows`, `get_workflow`, `find_unused_workflows`, `list_runs`, `get_run`, `get_run_logs`, `list_workers`, `get_queue_metrics`) are non-destructive.
 
-`trigger_workflow`, `cancel_runs`, and `replay_runs` **mutate live state** — their descriptions are prefixed `MUTATES LIVE STATE` so agents and users know they affect real runs.
+`trigger_workflow`, `cancel_runs`, `replay_runs`, and `delete_workflow` **mutate live state** — their descriptions are prefixed `MUTATES LIVE STATE` so agents and users know they affect real runs.
+
+`delete_workflow` removes a workflow **definition** (and its cron schedules), not an individual run. Use `find_unused_workflows` first; pass `confirm: true` or the call is rejected.
 
 The token grants full tenant access — treat it as a secret. Never commit it to source control.
 
@@ -78,4 +83,4 @@ TypeScript / ESM, tested with [vitest](https://vitest.dev).
 
 ## Status
 
-v0.1.0 — all tools verified against Hatchet Cloud; works with self-hosted instances via `HATCHET_API_BASE`. `trigger_workflow` uses the stable `/workflow-runs/trigger` endpoint.
+v0.2.0 — unused-workflow discovery + definition delete. Works with self-hosted instances via `HATCHET_API_BASE`. `trigger_workflow` uses the stable `/workflow-runs/trigger` endpoint.

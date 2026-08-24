@@ -4,7 +4,7 @@ import { registerObservabilityTools } from "./tools/observability.js";
 import { registerActionTools } from "./tools/actions.js";
 
 export function createServer(client: HatchetClient): McpServer {
-  const server = new McpServer({ name: "hatchet-mcp", version: "0.1.0" });
+  const server = new McpServer({ name: "hatchet-mcp", version: "0.2.0" });
 
   server.registerTool(
     "whoami",

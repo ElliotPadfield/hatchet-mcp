@@ -1,8 +1,8 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
   "name": "io.github.ElliotPadfield/hatchet-mcp",
-  "description": "Observe and operate Hatchet workflows from an AI agent — runs, logs, trigger, cancel, replay.",
-  "version": "0.1.1",
+  "description": "Observe and operate Hatchet workflows from an AI agent — runs, logs, unused-workflow cleanup, trigger, cancel, replay, delete.",
+  "version": "0.2.0",
   "repository": {
     "url": "https://github.com/ElliotPadfield/hatchet-mcp",
     "source": "github"
@@ -12,7 +12,7 @@
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "hatchet-mcp",
-      "version": "0.1.1",
+      "version": "0.2.0",
       "transport": {
         "type": "stdio"
       },

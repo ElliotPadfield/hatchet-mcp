@@ -60,10 +60,18 @@ export class HatchetClient {
     return JSON.parse(raw) as T;
   }
 
-  listWorkflows(params: { limit?: number; offset?: number } = {}): Promise<Paginated<WorkflowRow>> {
+  listWorkflows(params: { limit?: number; offset?: number; name?: string } = {}): Promise<Paginated<WorkflowRow>> {
     return this.request("GET", `/api/v1/tenants/${this.cfg.tenantId}/workflows`, {
-      query: { limit: params.limit, offset: params.offset },
+      query: { limit: params.limit, offset: params.offset, name: params.name },
     });
+  }
+
+  getWorkflow(workflowId: string): Promise<unknown> {
+    return this.request("GET", `/api/v1/workflows/${workflowId}`);
+  }
+
+  async deleteWorkflow(workflowId: string): Promise<void> {
+    await this.request("DELETE", `/api/v1/workflows/${workflowId}`);
   }
 
   listRuns(params: ListRunsParams): Promise<Paginated<RunRow>> {

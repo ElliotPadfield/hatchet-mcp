@@ -61,4 +61,22 @@ export function registerActionTools(server: McpServer, client: HatchetClient): v
       return text(`Replayed ${runIds.length} run(s).`);
     },
   );
+
+  server.registerTool(
+    "delete_workflow",
+    {
+      description:
+        "MUTATES LIVE STATE. Permanently delete a workflow DEFINITION (not a run) by id. This removes the definition from the tenant, including cron schedules, and cannot be undone. Confirm with confirm=true. Prefer find_unused_workflows first. Cancel in-flight runs separately if needed.",
+      inputSchema: {
+        workflowId: z.string().uuid().describe("Workflow definition id from list_workflows / find_unused_workflows"),
+        confirm: z
+          .literal(true)
+          .describe("Must be true. Refuses to delete without an explicit confirmation."),
+      },
+    },
+    async ({ workflowId }) => {
+      await client.deleteWorkflow(workflowId);
+      return text(`Deleted workflow definition ${workflowId}.`);
+    },
+  );
 }

@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { HatchetClient } from "../hatchet/client.js";
 import { formatRunsList, formatRunDetail, formatLogs } from "../format.js";
+import { findUnusedWorkflows, formatUnusedWorkflows } from "../unused.js";
 
 const text = (s: string) => ({ content: [{ type: "text" as const, text: s }] });
 const json = (v: unknown) => {
@@ -20,9 +21,40 @@ export function registerObservabilityTools(server: McpServer, client: HatchetCli
     "list_workflows",
     {
       description: "List workflow definitions for the tenant.",
-      inputSchema: { limit: z.number().int().positive().max(200).optional() },
+      inputSchema: {
+        limit: z.number().int().positive().max(200).optional(),
+        offset: z.number().int().min(0).optional(),
+        name: z.string().optional().describe("Optional name substring filter"),
+      },
     },
-    async ({ limit }) => json(await client.listWorkflows({ limit })),
+    async ({ limit, offset, name }) => json(await client.listWorkflows({ limit, offset, name })),
+  );
+
+  server.registerTool(
+    "get_workflow",
+    {
+      description: "Get one workflow definition by id (versions, metadata).",
+      inputSchema: { workflowId: z.string().uuid().describe("Workflow definition id from list_workflows") },
+    },
+    async ({ workflowId }) => json(await client.getWorkflow(workflowId)),
+  );
+
+  server.registerTool(
+    "find_unused_workflows",
+    {
+      description:
+        "List workflow DEFINITIONS with no runs in a lookback window. Use this to find stale Hatchet registrations (renamed/retired tasks that still appear in the dashboard). Does not delete anything.",
+      inputSchema: {
+        lookbackDays: z
+          .number()
+          .int()
+          .positive()
+          .max(365)
+          .optional()
+          .describe("Days of run history to check; defaults to 30"),
+      },
+    },
+    async ({ lookbackDays }) => text(formatUnusedWorkflows(await findUnusedWorkflows(client, { lookbackDays }))),
   );
 
   server.registerTool(
