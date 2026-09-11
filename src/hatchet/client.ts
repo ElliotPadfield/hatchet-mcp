@@ -106,8 +106,10 @@ export class HatchetClient {
     return this.request("GET", `/api/v1/tenants/${this.cfg.tenantId}/worker`);
   }
 
-  getTaskMetrics(): Promise<unknown> {
-    return this.request("GET", `/api/v1/stable/tenants/${this.cfg.tenantId}/task-metrics`);
+  getTaskMetrics(params: { since?: string; until?: string } = {}): Promise<unknown> {
+    return this.request("GET", `/api/v1/stable/tenants/${this.cfg.tenantId}/task-metrics`, {
+      query: { since: params.since, until: params.until },
+    });
   }
 
   triggerWorkflow(args: {

@@ -15,7 +15,13 @@ function fakeServer() {
 
 const fakeClient = {
   tenantId: "t1",
-  listWorkflows: vi.fn(async () => ({ rows: [{ metadata: { id: "w1" }, name: "wf" }] })),
+  listWorkflows: vi.fn(async () => ({
+    rows: [
+      { metadata: { id: "w1" }, name: "alpha-sync" },
+      { metadata: { id: "w2" }, name: "beta-sync", isPaused: true },
+      { metadata: { id: "w3" }, name: "gamma-report" },
+    ],
+  })),
   listRuns: vi.fn(async () => ({ rows: [] })),
   getRun: vi.fn(async () => ({ run: { metadata: { id: "r1" }, displayName: "d", status: "RUNNING", workflowName: "wf" } })),
   getTaskLogs: vi.fn(async () => ({ rows: [] })),
@@ -24,6 +30,51 @@ const fakeClient = {
 };
 
 describe("registerObservabilityTools", () => {
+  it("get_queue_metrics supplies a default 'since' (the API requires it)", async () => {
+    const s = fakeServer();
+    registerObservabilityTools(s as any, fakeClient as any);
+    await s.tools["get_queue_metrics"].handler({});
+    const arg = (fakeClient.getTaskMetrics as any).mock.calls.at(-1)[0];
+    expect(arg?.since).toBeTruthy();
+  });
+
+  it("get_queue_metrics honours an explicit 'since'", async () => {
+    const s = fakeServer();
+    registerObservabilityTools(s as any, fakeClient as any);
+    await s.tools["get_queue_metrics"].handler({ since: "2024-05-05T00:00:00.000Z" });
+    const arg = (fakeClient.getTaskMetrics as any).mock.calls.at(-1)[0];
+    expect(arg.since).toBe("2024-05-05T00:00:00.000Z");
+  });
+
+  it("list_workflows emits one compact line per workflow, flagging paused ones", async () => {
+    const s = fakeServer();
+    registerObservabilityTools(s as any, fakeClient as any);
+    const res = await s.tools["list_workflows"].handler({});
+    const out = res.content[0].text as string;
+    expect(out.split("\n")[0]).toBe("3 workflows");
+    expect(out).toContain("alpha-sync\tid=w1");
+    expect(out).toContain("beta-sync\tid=w2\tPAUSED");
+    // Compact output is the point: it must stay well under the 8000-char
+    // truncation that previously hid later rows on real tenants.
+    expect(out.length).toBeLessThan(8000);
+  });
+
+  it("list_workflows filters by nameContains, case-insensitively", async () => {
+    const s = fakeServer();
+    registerObservabilityTools(s as any, fakeClient as any);
+    const res = await s.tools["list_workflows"].handler({ nameContains: "SYNC" });
+    const out = res.content[0].text as string;
+    expect(out.split("\n")[0]).toBe('2 of 3 workflows matching "SYNC"');
+    expect(out).not.toContain("gamma-report");
+  });
+
+  it("list_workflows reports a 0-match filter as a definitive result", async () => {
+    const s = fakeServer();
+    registerObservabilityTools(s as any, fakeClient as any);
+    const res = await s.tools["list_workflows"].handler({ nameContains: "nope" });
+    expect(res.content[0].text).toBe('0 of 3 workflows matching "nope"');
+  });
+
   it("registers the expected read tools", () => {
     const s = fakeServer();
     registerObservabilityTools(s as any, fakeClient as any);

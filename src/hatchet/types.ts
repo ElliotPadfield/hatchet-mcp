@@ -13,6 +13,7 @@ export interface WorkflowRow {
   metadata: ApiMeta;
   name: string;
   description?: string;
+  isPaused?: boolean;
 }
 
 // A row from /stable/tenants/{t}/workflow-runs (verified shape).

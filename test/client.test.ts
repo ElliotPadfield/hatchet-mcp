@@ -14,6 +14,29 @@ function mockFetch(status: number, body: unknown, headers: Record<string, string
 
 afterEach(() => vi.restoreAllMocks());
 
+describe("HatchetClient.getTaskMetrics", () => {
+  it("sends `since` as a query param (the endpoint rejects the request without it)", async () => {
+    const f = mockFetch(200, []);
+    const client = new HatchetClient(cfg, f);
+    await client.getTaskMetrics({ since: "2024-01-01T00:00:00.000Z" });
+    const url = new URL(f.mock.calls[0][0] as string);
+    expect(url.pathname).toBe("/api/v1/stable/tenants/t1/task-metrics");
+    expect(url.searchParams.get("since")).toBe("2024-01-01T00:00:00.000Z");
+  });
+
+  it("forwards `until` and omits params that were not supplied", async () => {
+    const f = mockFetch(200, []);
+    const client = new HatchetClient(cfg, f);
+    await client.getTaskMetrics({ since: "2024-01-01T00:00:00.000Z", until: "2024-01-02T00:00:00.000Z" });
+    const url = new URL(f.mock.calls[0][0] as string);
+    expect(url.searchParams.get("until")).toBe("2024-01-02T00:00:00.000Z");
+
+    const f2 = mockFetch(200, []);
+    await new HatchetClient(cfg, f2).getTaskMetrics({ since: "2024-01-01T00:00:00.000Z" });
+    expect(new URL(f2.mock.calls[0][0] as string).searchParams.has("until")).toBe(false);
+  });
+});
+
 describe("HatchetClient.request", () => {
   it("sends the Bearer header and parses JSON", async () => {
     const f = mockFetch(200, { ok: true });
