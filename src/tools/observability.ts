@@ -19,10 +19,30 @@ export function registerObservabilityTools(server: McpServer, client: HatchetCli
   server.registerTool(
     "list_workflows",
     {
-      description: "List workflow definitions for the tenant.",
-      inputSchema: { limit: z.number().int().positive().max(200).optional() },
+      description:
+        "List workflow definitions (name, id, paused) for the tenant, one compact line each. " +
+        "Use nameContains to narrow; a 0-match result means the workflow does not exist on this tenant.",
+      inputSchema: {
+        limit: z.number().int().positive().max(200).optional(),
+        nameContains: z
+          .string()
+          .optional()
+          .describe("Case-insensitive substring filter on workflow name"),
+      },
     },
-    async ({ limit }) => json(await client.listWorkflows({ limit })),
+    async ({ limit, nameContains }) => {
+      const res = await client.listWorkflows({ limit: limit ?? 200 });
+      const all = res?.rows ?? [];
+      const needle = nameContains?.toLowerCase();
+      const rows = needle ? all.filter((r) => (r.name ?? "").toLowerCase().includes(needle)) : all;
+      const lines = rows.map(
+        (r) => `${r.name}\tid=${r.metadata?.id ?? "?"}${r.isPaused ? "\tPAUSED" : ""}`,
+      );
+      const header = needle
+        ? `${rows.length} of ${all.length} workflows matching "${nameContains}"`
+        : `${rows.length} workflows`;
+      return text([header, ...lines].join("\n"));
+    },
   );
 
   server.registerTool(
@@ -84,7 +104,15 @@ export function registerObservabilityTools(server: McpServer, client: HatchetCli
 
   server.registerTool(
     "get_queue_metrics",
-    { description: "Get task/queue metrics for the tenant (queue health).", inputSchema: {} },
-    async () => json(await client.getTaskMetrics()),
+    {
+      description:
+        "Get task/queue counts by status for the tenant (queue health). Defaults to the last 24h.",
+      inputSchema: {
+        since: z.string().optional().describe("ISO timestamp lower bound; defaults to 24h ago"),
+        until: z.string().optional(),
+      },
+    },
+    async ({ since, until }) =>
+      json(await client.getTaskMetrics({ since: since ?? defaultSince(), until })),
   );
 }
